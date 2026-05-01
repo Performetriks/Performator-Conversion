@@ -21,7 +21,6 @@ public class RequestEntry {
 	String url = "";
 	String urlHost = "";
 	String urlQuery = "";
-	String urlVariable = "";
 	
 	int status = 200; // response status
 	
@@ -48,7 +47,7 @@ public class RequestEntry {
 	 *********************************************/
 	public static void reset() {
 		INDEX_COUNTER = 0;
-		headerHashtoIndexMap = new LinkedHashMap<>();
+		headerHashtoIndexMap.clear();
 	}
 	/*********************************************
 	 * Returns the name prefixed with a 3 digit
@@ -73,6 +72,22 @@ public class RequestEntry {
 	public static void clearHostList() {
 		 hostList = new ArrayList<>();
 	}
+	
+	/*********************************************
+	 * Returns the index of the host of this request.
+	 *********************************************/
+	public int hostIndex() {
+		return hostList.indexOf(urlHost);
+	}
+	
+	/*********************************************
+	 * Returns the url of the host of this request.
+	 *********************************************/
+	public String hostURL() {
+		return urlHost;
+	}
+	
+	
 	
 	/*********************************************
 	 * Adds a http parameter.
@@ -282,12 +297,20 @@ public class RequestEntry {
 		
 		//------------------------
 		// Define URL Variable
-		if( ! hostList.contains(urlHost) && checkIncludeRequest() ) {
+		if( ! hostList.contains(urlHost) 
+		   && checkIncludeRequest() 
+		   ){
 			hostList.add(urlHost);
 		}
-		
-		urlVariable = "url_" + hostList.indexOf(urlHost); 
 
+	}
+	
+	/*********************************************
+	 * Returns the name of the URL variable.
+	 * For example "url_0", "url_1" etc...
+	 *********************************************/
+	public String urlVariable() {
+		return "url_" + hostIndex();
 	}
 			
 	/*****************************************************************************
@@ -365,4 +388,5 @@ public class RequestEntry {
 		// Remove consecutive underscores
 		return PFR.Text.replaceAll(sanitized, "__+", "_");
 	}
+	
 }

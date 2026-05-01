@@ -593,6 +593,7 @@ public abstract class PFRConverterUI extends JFrame {
 	private String generateFullClassCode() {
 		
 		StringBuilder sb = new StringBuilder();
+		List<RequestEntry> requests = filterRequests();
 		
 		//--------------------------------------------------
 		// Package & Imports
@@ -628,9 +629,19 @@ public class UsecaseConverted extends PFRUsecase {
 		//--------------------------------------------------
 		// URL Variables
 		if(cbMakeURLVariable.isSelected()) {
-			ArrayList<String> hostList = RequestEntry.getHostList();
-			for(int i = 0; i < hostList.size(); i++) {
-				sb.append("\tprivate String url_"+i+" = \""+hostList.get(i)+"\";\n");
+			
+			HashSet<Integer> processedHosts = new HashSet<>();
+			
+			for(RequestEntry req : requests) {
+				
+				if(req.checkIncludeRequest()) {
+					
+					if(processedHosts.contains(req.hostIndex()) ){ continue; }
+					processedHosts.add(req.hostIndex());
+					
+					sb.append("\tprivate String " + req.urlVariable() + " = \""+req.hostURL()+"\";\n");
+				}
+			
 			}
 		}
 		
@@ -669,8 +680,6 @@ public class UsecaseConverted extends PFRUsecase {
 			sb.append("		try {\n");
 		}
 
-		// Iterate requests based on filters
-		List<RequestEntry> requests = filterRequests();
 
 		// If separateRequests true -> generate methods and call them
 		boolean separateResponses = cbSeparateResponses.isSelected();
@@ -859,10 +868,10 @@ public class UsecaseConverted extends PFRUsecase {
 		String urlPart = "\""+escape(req.url)+"\"";
 		if(cbMakeURLVariable.isSelected()) {
 			
-			urlPart = req.urlVariable +" + \""+ escape(req.urlQuery) +"\"";
+			urlPart = req.urlVariable() +" + \""+ escape(req.urlQuery) +"\"";
 
 		}
-
+		
 		//--------------------------------------------------
 		// Create
 		sb.append("PFRHttp.create(\"").append(req.indexedName(idx,false)).append("\"")
