@@ -1,0 +1,277 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	
+	<!-- ================= PROJECT INFORMATION ================== -->
+	<modelVersion>4.0.0</modelVersion>
+	<groupId>com.performetriks</groupId>
+	<artifactId>performator-conversion</artifactId>
+	<version>1.2.3</version>
+	
+	<name>Performator-Conversion</name>
+	<description>Library class that contains utilities used to convert input into Performator use case scripts.</description>
+	<url>https://github.com/Performetriks/Performator-Conversion</url>
+	
+	<!-- ================= PROPERTIES ================== -->
+	<properties>
+		
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<otel.version>1.49.0</otel.version>
+		
+		<skipJavadoc>false</skipJavadoc>
+		<skipSigning>false</skipSigning>
+	</properties>
+	
+		<!-- ================= LICENSES ================== -->
+	<licenses>
+		<license>
+			<name>Eclipse Public License - v 2.0</name>
+			<url>https://github.com/Performetriks/Performator-Conversion/blob/main/LICENSE</url>
+		</license>
+	</licenses>
+
+	<!-- ================= DEVELOPERS ================== -->
+	<developers>
+		<developer>
+			<name>Reto Scheiwiller</name>
+			<email>reto.scheiwiller@performatriks.com</email>
+			<organization>Performetriks</organization>
+			<organizationUrl>http://www.performetriks.com</organizationUrl>
+		</developer>
+	</developers>
+
+	<!-- ================= SCM ================== -->
+	<scm>
+		<connection>scm:git:git://github.com/Performetriks/Performator-Conversion.git</connection>
+		<developerConnection>scm:git:ssh://github.com/Performetriks/Performator-Conversion.git</developerConnection>
+		<url>https://github.com/Performetriks/Performator-Conversion/tree/main</url>
+	</scm>
+
+	<!-- ================= DEPENDENCIES ================== -->
+	<dependencies>
+		
+		<!-- https://mvnrepository.com/artifact/com.performetriks/performator -->
+		<dependency>
+		    <groupId>com.performetriks</groupId>
+		    <artifactId>performator</artifactId>
+		    <version>1.2.3</version>
+		    <scope>provided</scope>
+		</dependency>
+		
+		<!-- https://mvnrepository.com/artifact/com.performetriks/performator-http -->
+		<dependency>
+		    <groupId>com.performetriks</groupId>
+		    <artifactId>performator-http</artifactId>
+		    <version>1.2.3</version>
+		</dependency>
+		
+		<!-- https://mvnrepository.com/artifact/com.xresch/xrscripting -->
+		<!-- dependency>
+			<groupId>com.xresch</groupId>
+			<artifactId>xrscripting</artifactId>
+			<version>1.1.1</version>
+		</dependency -->
+		
+		<dependency>
+		    <groupId>ch.qos.logback</groupId>
+		    <artifactId>logback-classic</artifactId>
+		    <version>1.5.12</version>
+		    <scope>provided</scope>
+		</dependency>
+		
+		
+		<!-- https://mvnrepository.com/artifact/org.graalvm.js/js -->
+		<dependency>
+		    <groupId>org.graalvm.js</groupId>
+		    <artifactId>js</artifactId>
+		    <version>25.0.0</version>
+		    <type>pom</type>
+		</dependency>
+		
+		<!-- https://mvnrepository.com/artifact/org.graalvm.js/js-scriptengine -->
+		<dependency>
+		    <groupId>org.graalvm.js</groupId>
+		    <artifactId>js-scriptengine</artifactId>
+		    <version>25.0.0</version>
+		</dependency>
+		
+		<!-- Source: https://mvnrepository.com/artifact/io.github.littleproxy/littleproxy -->
+		<!-- dependency>
+		    <groupId>io.github.littleproxy</groupId>
+		    <artifactId>littleproxy</artifactId>
+		    <version>2.7.0</version>
+		</dependency-->
+		
+		<dependency>
+            <!-- Temporarily using the BMP release of littleproxy because LP 1.1.2 is incompatible with guava 22+ -->
+            <groupId>net.lightbody.bmp</groupId>
+            <artifactId>littleproxy</artifactId>
+            <version>1.1.0-beta-bmp-17</version>
+		</dependency>
+		
+		<!-- new dependency on the MITM module -->
+	    <dependency>
+	        <groupId>net.lightbody.bmp</groupId>
+	        <artifactId>mitm</artifactId>
+	        <version>2.1.4</version>
+	    </dependency>
+				
+		<!-- ========================================================================== -->
+		<!-- ============================ SCOPE: TESTING ============================== -->
+		<!-- ========================================================================== -->
+		
+		<!-- ===================== JUnit 5 ===================== -->
+		<dependency>
+		    <groupId>org.junit.jupiter</groupId>
+		    <artifactId>junit-jupiter</artifactId>
+		    <version>5.11.4</version>
+		    <scope>test</scope>
+		</dependency>
+		
+		<dependency>
+		    <groupId>org.junit.platform</groupId>
+		    <artifactId>junit-platform-launcher</artifactId>
+		    <version>1.11.4</version>
+		    <scope>test</scope>
+		</dependency>
+		
+		<dependency>
+		    <groupId>org.junit.platform</groupId>
+		    <artifactId>junit-platform-suite-api</artifactId>
+		    <version>1.11.4</version>
+		    <scope>test</scope>
+		</dependency>
+		
+		<dependency>
+		    <groupId>org.junit.platform</groupId>
+		    <artifactId>junit-platform-suite-engine</artifactId>
+		    <version>1.11.4</version>
+		    <scope>test</scope>
+		</dependency>
+		
+
+	</dependencies>
+
+
+	<!-- ================= BUILD ================== -->
+	<build>
+		
+			
+		<!-- ================= RESOURCES ================== -->
+		<resources>
+			<resource>
+				<directory>src/main/java</directory>
+				<excludes>
+					<exclude>**/*.java</exclude>
+				</excludes>
+			</resource>
+			<resource>
+				<directory>src/main/resources</directory>
+			</resource>
+		</resources>
+		
+		<!-- ================= TEST RESOURCES ================== -->
+		<testResources>
+			<testResource>
+				<directory>src/test/java</directory>
+				<excludes>
+					<exclude>**/*.java</exclude>
+				</excludes>
+			</testResource>
+		</testResources>
+
+		<plugins>
+							    
+			<!-- ================= COMPILER ================== -->
+			<plugin>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<version>3.13.0</version>
+				<configuration>
+					<release>17</release>
+				</configuration>
+			</plugin>
+			
+			<!-- ================= SUREFIRE (tests) ================== -->
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-surefire-plugin</artifactId>
+				<version>3.5.2</version>
+			</plugin>
+			
+
+			<!-- ================= INSTALL ================== -->
+			<plugin>
+			  <artifactId>maven-install-plugin</artifactId>
+			  <version>3.1.3</version>
+			  <configuration>
+			    <createChecksum>true</createChecksum>
+			  </configuration>
+			</plugin>
+			
+			<!-- ================= SOURCES ================== -->
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-source-plugin</artifactId>
+				<version>3.3.0</version>
+				<executions>
+					<execution>
+						<id>attach-sources</id>
+						<goals>
+							<goal>jar</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+			
+			<!-- ================= JAVADOC ================== -->
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-javadoc-plugin</artifactId>
+				<version>3.5.0</version>
+				<executions>
+					<execution>
+						<id>attach-javadocs</id>
+						<goals>
+							<goal>jar</goal>
+						</goals>
+					</execution>
+				</executions>
+				<configuration>
+					<skip>${skipJavadoc}</skip>
+					<additionalparam>-Xdoclint:none</additionalparam>
+					<additionalOptions>-Xdoclint:none</additionalOptions>
+					<additionalJOption>-Xdoclint:none</additionalJOption>
+				</configuration>
+			</plugin>
+
+			<!-- ================= GPG SIGN ================== -->
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-gpg-plugin</artifactId>
+				<version>1.6</version>
+				<executions>
+					<execution>
+						<id>sign-artifacts</id>
+						<phase>verify</phase>
+						<goals>
+							<goal>sign</goal>
+						</goals>
+					</execution>
+				</executions>
+				<configuration>
+					<skip>${skipSigning}</skip>
+					<gpgArguments>
+						<arg>--pinentry-mode</arg>
+						<arg>loopback</arg>
+						<arg>--status-fd</arg>
+						<arg>--yes</arg>
+						<arg>--always-trust</arg>
+
+					</gpgArguments>
+				</configuration>
+			</plugin>
+			
+		</plugins>
+
+	</build>
+</project>
