@@ -2,6 +2,8 @@ package com.performetriks.performator.conversion;
 
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
+import java.util.Map.Entry;
+import java.util.TreeMap;
 
 import com.google.common.base.Strings;
 import com.google.gson.JsonElement;
@@ -23,16 +25,31 @@ public class RequestEntry {
 	
 	int status = 200; // response status
 	
-	LinkedHashMap<String, String> headers = new LinkedHashMap<>();
 	LinkedHashMap<String, String> params = new LinkedHashMap<>();
 	String body = "";
 	String bodyAsJson = ""; // used for JSON body
 	String resourceType = "";
 	
+
 	// keep track of all hosts
 	public static ArrayList<String> hostList = new ArrayList<>();
 	
+	//--------------------
+	// Headers
+	private Integer headersIndex = null;
+	private LinkedHashMap<String, String> headers = new LinkedHashMap<>();
+	private static int INDEX_COUNTER = 0;
+	
+	// First is hash, Second is Header ID 
+	private static LinkedHashMap<Integer, Integer> headerHashtoIndexMap = new LinkedHashMap<>();
 
+	/*********************************************
+	 * Resets counters and such.
+	 *********************************************/
+	public static void reset() {
+		INDEX_COUNTER = 0;
+		headerHashtoIndexMap = new LinkedHashMap<>();
+	}
 	/*********************************************
 	 * Returns the name prefixed with a 3 digit
 	 * index.
@@ -74,6 +91,43 @@ public class RequestEntry {
 	public RequestEntry header(String name, String value) {
 		 headers.put(name, value);
 		 return this;
+	}
+	
+	/*********************************************
+	 * Returns the headers for this entry.
+	 * 
+	 * @return headers
+	 *********************************************/
+	public LinkedHashMap<String, String> headers() {
+		return headers;
+	}
+	
+	/*********************************************
+	 * Returns the headerIndex for this entry.
+	 * Should only be called once after all headers
+	 * for this entry have been added in whole.
+	 * 
+	 * @return headers
+	 *********************************************/
+	protected int headersIndex() {
+		
+		if(headersIndex == null) {
+			StringBuilder concat = new StringBuilder();
+			TreeMap<String, String> headersSorted = new TreeMap<>(headers);
+			for(Entry<String, String> header : headersSorted.entrySet()) {
+				concat.append(header.getKey()).append(header.getValue());
+			}
+			
+			int hash = concat.toString().hashCode();
+			if( ! headerHashtoIndexMap.containsKey(hash) ) {
+				headerHashtoIndexMap.put(hash, INDEX_COUNTER++);
+				
+			}
+			
+			headersIndex = headerHashtoIndexMap.get(hash);
+		}
+		
+		return headersIndex;
 	}
 	
 	/*********************************************
@@ -228,7 +282,7 @@ public class RequestEntry {
 		
 		//------------------------
 		// Define URL Variable
-		if( ! hostList.contains(urlHost) ) {
+		if( ! hostList.contains(urlHost) && checkIncludeRequest() ) {
 			hostList.add(urlHost);
 		}
 		

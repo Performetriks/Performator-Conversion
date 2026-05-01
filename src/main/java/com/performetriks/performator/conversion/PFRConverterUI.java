@@ -14,6 +14,8 @@ import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.awt.event.ItemListener;
 import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.function.BiConsumer;
@@ -566,6 +568,9 @@ public abstract class PFRConverterUI extends JFrame {
 	 * This method is called whenever any input is changed (or the HAR is loaded).
 	 *****************************************************************************/
 	public void regenerateCode() {
+		
+		RequestEntry.reset();
+		
 		int currentPos = outputArea.getCaretPosition();
 		
 		String code = generateFullClassCode();
@@ -760,15 +765,34 @@ public class UsecaseConverted extends PFRUsecase {
 
 		// Add header methods if separateHeaders true
 		if (separateHeaders) {
-			int hidx = 0;
+			
+			HashSet<Integer> processedHeaderIDs = new HashSet<>();
+			
 			for (RequestEntry req : requests) {
-				if (req.headers != null && !req.headers.isEmpty()) {
+				
+				if( ! req.checkIncludeRequest() ) {
+					continue;
+				}
+				//--------------------------
+				// Check is Alredy Printed
+				int indexHeader = req.headersIndex();
+				if(processedHeaderIDs.contains(indexHeader)) {
+					continue;
+				}
+				processedHeaderIDs.add(indexHeader);
+				
+				//--------------------------
+				// Print Header Methods
+				LinkedHashMap<String, String> headers = req.headers();
+
+				if (headers != null && !headers.isEmpty()) {
+					
 					sb.append("	/***************************************************************************\n");
 					sb.append("	 * \n");
 					sb.append("	 ***************************************************************************/\n");
-					sb.append("	private LinkedHashMap<String,String> getHeaders_").append( threeDigits(hidx) ).append("() {\n");
+					sb.append("	private LinkedHashMap<String,String> getHeaders_").append( threeDigits(req.headersIndex()) ).append("() {\n");
 					sb.append("		LinkedHashMap<String,String> headers = new LinkedHashMap<>();\n\n");
-					for (Map.Entry<String, String> e : req.headers.entrySet()) {
+					for (Map.Entry<String, String> e : headers.entrySet()) {
 						String name = e.getKey();
 						if( PFRHttpRequestBuilder.isIncludedHeader(name) ){
 							sb.append("		headers.put(\"").append(escape(name)).append("\", \"").append(escape(e.getValue())).append("\");\n");
@@ -777,7 +801,7 @@ public class UsecaseConverted extends PFRUsecase {
 					sb.append("		"+PLACEHOLDER_HEADERS_AFTER+"\n");
 					sb.append("		return headers;\n");
 					sb.append("	}\n\n");
-					hidx++;
+
 				}
 			}
 		}
@@ -867,11 +891,13 @@ public class UsecaseConverted extends PFRUsecase {
 		
 		//----------------------------------
 		// headers
-		if (req.headers != null && !req.headers.isEmpty()) {
+		LinkedHashMap<String, String> headers = req.headers();
+		
+		if (headers != null && !headers.isEmpty()) {
 			if (separateHeaders) {
-				sb.append(postfix).append("\t.headers(getHeaders_").append(threeDigits(findHeaderIndex(req))).append("())");
+				sb.append(postfix).append("\t.headers(getHeaders_").append(threeDigits(req.headersIndex())).append("())");
 			} else {
-				for (Map.Entry<String, String> e : req.headers.entrySet()) {
+				for (Map.Entry<String, String> e : headers.entrySet()) {
 					String name = e.getKey();
 					if( PFRHttpRequestBuilder.isIncludedHeader(name) ){
 						sb.append(postfix).append("\t.header(\"").append(escape(name)).append("\", \"").append(escape(e.getValue())).append("\")");
@@ -944,18 +970,18 @@ public class UsecaseConverted extends PFRUsecase {
 	 * @param req the request
 	 * @return index integer
 	 *****************************************************************************/
-	private int findHeaderIndex(RequestEntry req) {
-		// Simple deterministic mapping based on the position in the filtered list
-		List<RequestEntry> filtered = filterRequests();
-		int count = 0;
-		for (RequestEntry r : filtered) {
-			if (r.headers != null && !r.headers.isEmpty()) {
-				if (r == req) return count;
-				count++;
-			}
-		}
-		return Math.max(0, count - 1);
-	}
+//	private int findHeaderIndex(RequestEntry req) {
+//		// Simple deterministic mapping based on the position in the filtered list
+//		List<RequestEntry> filtered = filterRequests();
+//		int count = 0;
+//		for (RequestEntry r : filtered) {
+//			if (r.headers() != null && !r.headers.isEmpty()) {
+//				if (r == req) return count;
+//				count++;
+//			}
+//		}
+//		return Math.max(0, count - 1);
+//	}
 
 	/*****************************************************************************
 	 * Find param method index for a given request.
