@@ -227,17 +227,11 @@ public abstract class PFRConverterUI extends JFrame {
 		// We'll add rows manually with label and component
 		// Row: Exclude Redirects
 		int row = 0;
-		addLabeled(inputs, grid,  "Exclude Redirects", cbExcludeRedirects,
-				"Checkbox to disable auto following HTTP redirects should be included in the script. " +
-						"If unchecked, the generated request builder will include .disableFollowRedirects().", row++);
-		addLabeled(inputs, grid,  "Exclude CSS", cbExcludeCss,
-				"Do not generate code for requests that have _resourceType=stylesheet.", row++);
-		addLabeled(inputs, grid,  "Exclude Scripts", cbExcludeScripts,
-				"Do not generate code for requests that have _resourceType=script.", row++);
-		addLabeled(inputs, grid,  "Exclude Images", cbExcludeImages,
-				"Do not generate code for requests that have image types in _resourceType.", row++);
-		addLabeled(inputs, grid,  "Exclude Fonts", cbExcludeFonts,
-				"Do not generate code for requests that have _resourceType=font.", row++);
+		addRowTwoColumns(inputs, grid, new JLabel("===== REQUEST FILTERING ====="), new JLabel(""), row++);
+		addRowTwoColumns(inputs, grid, cbExcludeRedirects, cbExcludeCss, row++);
+		addRowTwoColumns(inputs, grid, cbExcludeScripts, cbExcludeImages, row++);
+		addRowTwoColumns(inputs, grid, cbExcludeFonts, new JLabel(""), row++);
+		
 
 		//--------------------------------------
 		// Exclude Regex
@@ -253,49 +247,20 @@ public abstract class PFRConverterUI extends JFrame {
 
 		//--------------------------------------
 		// Other toggles
-		addLabeled(inputs, grid, "Make URL Variables", cbMakeURLVariable,
-				"If selected, the host part of the url will be extracted and put into a variable.", row++);
-		addLabeled(inputs, grid, "Separate Responses", cbSeparateResponses,
-				"If selected, each response gets it's own PFRHttpResponse instance.", row++);
-		addLabeled(inputs, grid, "Separate Requests", cbSeparateRequests,
-				"If selected, HTTP requests will be generated into separate methods (one per request) and called from execute().", row++);
-		addLabeled(inputs, grid, "Separate Headers", cbSeparateHeaders,
-				"If selected, headers will be emitted in separate getHeaders*() methods; otherwise they are inline as .header(...).", row++);
-		addLabeled(inputs, grid, "Separate Parameters", cbSeparateParameters,
-				"If selected, parameters will be emitted in separate getParams*() methods; otherwise they are inline as .param(...).", row++);
-		addLabeled(inputs, grid, "Surround with try-catch", cbSurroundTryCatch,
-				"If selected, execute() will include try-catch around the requests.", row++);
+		addRowTwoColumns(inputs, grid, new JLabel(" "), new JLabel(" "), row++);
+		addRowTwoColumns(inputs, grid, new JLabel("===== CODE STRUCTURE ====="), new JLabel(""), row++);
+		addRowTwoColumns(inputs, grid, cbSeparateHeaders, cbSeparateParameters, row++);
+		addRowTwoColumns(inputs, grid, cbSeparateRequests, cbSeparateResponses, row++);
+		addRowTwoColumns(inputs, grid, cbMakeURLVariable, cbSurroundTryCatch, row++);
+		addRowTwoColumns(inputs, grid, cbDebugLogOnFail, new JLabel(" "), row++);
 
 		//--------------------------------------
 		// Checks / placeholders
-		addLabeled(inputs, grid, "Add checkBodyContains(\"\")"
-				, cbAddCheckBodyContains,
-				"Add a placeholder checkBodyContains(\"\") in the generated request builder chain."
-				, row++
-				);
-		
-		addLabeled(inputs, grid, "Add checkStatusEquals(200)"
-				, cbAddCheckStatusEquals,
-				"Add a placeholder checkStatusEquals(200) in the generated request builder chain."
-				, row++
-				);
-		
-		addLabeled(inputs, grid, "Add measureSize(ByteSize.KB)"
-				, cbAddMeasureSize,
-				"Add a placeholder measureSize(ByteSize.KB) in the generated request builder chain."
-				, row++
-				);
-		
-		addLabeled(inputs, grid, "Add throwOnFail()"
-				, cbAddThrowOnFail,
-				"Add throwOnFail() after .send() in the generated chain."
-				, row++
-				);
+		addRowTwoColumns(inputs, grid, new JLabel(" "), new JLabel(" "), row++);
+		addRowTwoColumns(inputs, grid, new JLabel("===== REQUEST BUILDING ====="), new JLabel(""), row++);
+		addRowTwoColumns(inputs, grid, cbAddCheckBodyContains, cbAddCheckStatusEquals, row++);
+		addRowTwoColumns(inputs, grid, cbAddMeasureSize, cbAddThrowOnFail, row++);
 
-		//--------------------------------------
-		// Other general options
-		addLabeled(inputs, grid, "Debug Log On Fail", cbDebugLogOnFail,
-				"If selected, PFRHttp.debugLogFail(true); will be emitted in initializeUser().", row++);
 
 		//--------------------------------------
 		// Numeric spinners
@@ -357,6 +322,7 @@ public abstract class PFRConverterUI extends JFrame {
 		JLabel lblpostprocessArea = new JLabel("Javascript Post Process:");
 		lblpostprocessArea.setToolTipText("Used to adjust the generated code to your liking using javascript.");
 
+
 		prepareTextarea(postprocessArea);
 		postprocessArea.setText("""
 				function postProcess(code){
@@ -386,12 +352,12 @@ public abstract class PFRConverterUI extends JFrame {
 				);
 		
 		
-
 		JScrollPane scrollPostProcess = new JScrollPane(postprocessArea);
 		scrollPostProcess.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_ALWAYS);
 
-
 		JPanel scriptingPanel = new JPanel(new BorderLayout());
+		scriptingPanel.setPreferredSize(new Dimension(0, 500));
+		
 		scriptingPanel.setBorder(new EmptyBorder(5, 5, 5, 5));
 		scriptingPanel.add(lblpostprocessArea,BorderLayout.NORTH);
 		scriptingPanel.add(scrollPostProcess, BorderLayout.CENTER);
@@ -484,14 +450,29 @@ public abstract class PFRConverterUI extends JFrame {
 	private void addLabeled(JPanel inputs, GridBagConstraints c, String label, JComponent comp, String tooltip, int nextRow) {
 		JLabel lbl = new JLabel(label + ":");
 		lbl.setToolTipText(tooltip);
+		addRowTwoColumns(inputs, c, lbl, comp, nextRow);
+
+	}
+	
+	/*****************************************************************************
+	 * Adds a row with two components.
+	 *
+	 * @param inputs the panel to add to
+	 * @param c GridBagConstraints used/modified
+	 * @param left the component to place on the left
+	 * @param right the component to place on the right
+	 * @param nextRow the next row number (used to increment)
+	 *****************************************************************************/
+	private void addRowTwoColumns(JPanel inputs, GridBagConstraints c, JComponent left, JComponent right, int nextRow) {
+
 		c.gridx = 0;
 		c.gridy = nextRow;
-		c.weightx = 0.3;
-		inputs.add(lbl, c);
+		c.weightx = 0.5;
+		inputs.add(left, c);
+		
 		c.gridx = 1;
-		c.weightx = 0.7;
-		comp.setToolTipText(tooltip);
-		inputs.add(comp, c);
+		c.weightx = 0.5;
+		inputs.add(right, c);
 	}
 
 	/*****************************************************************************
