@@ -356,7 +356,7 @@ public abstract class PFRConverterUI extends JFrame {
 		scrollPostProcess.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_ALWAYS);
 
 		JPanel scriptingPanel = new JPanel(new BorderLayout());
-		scriptingPanel.setPreferredSize(new Dimension(0, 500));
+		scriptingPanel.setPreferredSize(new Dimension(0, 350));
 		
 		scriptingPanel.setBorder(new EmptyBorder(5, 5, 5, 5));
 		scriptingPanel.add(lblpostprocessArea,BorderLayout.NORTH);
