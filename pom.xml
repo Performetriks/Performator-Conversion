@@ -6,7 +6,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.performetriks</groupId>
 	<artifactId>performator-conversion</artifactId>
-	<version>1.2.3</version>
+	<version>1.2.4</version>
 	
 	<name>Performator-Conversion</name>
 	<description>Library class that contains utilities used to convert input into Performator use case scripts.</description>
@@ -54,7 +54,7 @@
 		<dependency>
 		    <groupId>com.performetriks</groupId>
 		    <artifactId>performator</artifactId>
-		    <version>1.2.3</version>
+		    <version>1.2.4</version>
 		    <scope>provided</scope>
 		</dependency>
 		
@@ -62,7 +62,7 @@
 		<dependency>
 		    <groupId>com.performetriks</groupId>
 		    <artifactId>performator-http</artifactId>
-		    <version>1.2.3</version>
+		    <version>1.2.4</version>
 		</dependency>
 		
 		<!-- https://mvnrepository.com/artifact/com.xresch/xrscripting -->
@@ -202,7 +202,7 @@
 			<!-- ================= INSTALL ================== -->
 			<plugin>
 			  <artifactId>maven-install-plugin</artifactId>
-			  <version>3.1.3</version>
+			  <version>2.3.1</version>
 			  <configuration>
 			    <createChecksum>true</createChecksum>
 			  </configuration>
